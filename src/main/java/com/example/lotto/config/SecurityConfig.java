@@ -23,6 +23,8 @@ public class SecurityConfig {
             String path = request.getRequestURI();
             return path.equals("/login")
                     || path.equals("/register")
+                    || path.equals("/error")
+                    || path.equals("/error-page")
                     || path.startsWith("/css/")
                     || path.startsWith("/js/");
         };
@@ -45,6 +47,10 @@ public class SecurityConfig {
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                                response.sendRedirect("/error-page?status=403"))
                 )
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers("/h2-console/**")
