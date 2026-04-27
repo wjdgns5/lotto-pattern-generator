@@ -17,6 +17,7 @@ import java.util.stream.IntStream;
 @Service
 public class LottoGenerationService {
 
+    // 토이 프로젝트에서 정한 생성 규칙입니다. 조건을 만족하지 않는 조합은 후보에서 제외합니다.
     private static final Set<Integer> LOW_FREQUENCY_NUMBERS = Set.of(4, 10, 20, 22, 26, 32, 34, 40, 42);
     private static final Set<String> THREE_THREE_PATTERNS = Set.of("OEOEOE", "EOEOEO", "OEOEEO", "OEEOEO");
     private static final Set<String> FOUR_TWO_PATTERNS = Set.of("OEOEOO", "OEOOEO", "OOEOEO");
@@ -32,6 +33,7 @@ public class LottoGenerationService {
     public GenerationResult generate(GenerationRequest request) {
         validate(request);
 
+        // 화면에서 입력한 제외수를 Set으로 바꾸고, 이미 나온 당첨 조합도 미리 Set으로 만들어 빠르게 검사합니다.
         Set<Integer> excludedNumbers = parseExcludedNumbers(request.getExcludedNumbers());
         List<String> messages = new ArrayList<>();
         Set<String> generatedKeys = new HashSet<>();
@@ -85,6 +87,8 @@ public class LottoGenerationService {
     ) {
         List<LottoCandidate> candidates = new ArrayList<>();
 
+        // 무한 루프를 막기 위해 최대 시도 횟수 안에서만 후보를 찾습니다.
+        // 후보 1개를 만든 뒤 홀짝 비율, 패턴, 합계, 저빈도 번호, 마커 규칙, 과거 당첨 여부를 차례대로 검사합니다.
         for (int attempt = 0; attempt < MAX_ATTEMPTS_PER_GROUP && candidates.size() < count; attempt++) {
             List<Integer> numbers = randomNumbers(excludedNumbers);
             LottoCandidate candidate = toCandidate(numbers);
@@ -118,6 +122,7 @@ public class LottoGenerationService {
     }
 
     private List<Integer> randomNumbers(Set<Integer> excludedNumbers) {
+        // 1~45 번호 풀에서 제외수를 뺀 뒤 섞고 6개를 뽑습니다.
         List<Integer> pool = IntStream.rangeClosed(1, 45)
                 .filter(number -> !excludedNumbers.contains(number))
                 .boxed()
@@ -130,6 +135,7 @@ public class LottoGenerationService {
     }
 
     private LottoCandidate toCandidate(List<Integer> numbers) {
+        // 화면 출력과 필터링에 필요한 합계, 홀짝 패턴, 저빈도 번호 목록을 계산합니다.
         int sum = numbers.stream().mapToInt(Integer::intValue).sum();
         String pattern = numbers.stream()
                 .map(number -> number % 2 == 0 ? "E" : "O")
@@ -148,6 +154,7 @@ public class LottoGenerationService {
     }
 
     private boolean passesMarkerRules(List<Integer> numbers) {
+        // 1~45를 7칸 단위 표로 봤을 때 같은 열/행에 지나치게 몰리는 조합을 제외합니다.
         return hasAtMostTwoInSameColumn(numbers)
                 && hasNoThreeStepSevenSequence(numbers)
                 && hasAtMostThreeInSameRow(numbers);
@@ -190,6 +197,7 @@ public class LottoGenerationService {
     }
 
     private Set<Integer> parseExcludedNumbers(String rawExcludedNumbers) {
+        // 사용자는 "1, 2, 3" 또는 "1 2 3"처럼 입력할 수 있으므로 쉼표/공백을 모두 구분자로 처리합니다.
         Set<Integer> excludedNumbers = new HashSet<>();
         if (rawExcludedNumbers == null || rawExcludedNumbers.isBlank()) {
             return excludedNumbers;

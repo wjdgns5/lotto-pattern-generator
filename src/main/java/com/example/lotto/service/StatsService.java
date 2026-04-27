@@ -21,6 +21,7 @@ public class StatsService {
     }
 
     public StatsSummary summarize() {
+        // 통계 화면에 필요한 모든 데이터를 한 번에 계산해 StatsSummary로 묶어 반환합니다.
         List<WinningDraw> draws = winningNumberService.findAll();
         Map<Integer, Long> numberCounts = new LinkedHashMap<>();
         IntStream.rangeClosed(1, 45).forEach(number -> numberCounts.put(number, 0L));
@@ -33,6 +34,7 @@ public class StatsService {
         sumRanges.put("151 이상", 0L);
 
         for (WinningDraw draw : draws) {
+            // 회차별 6개 번호를 순회하면서 번호 빈도, 홀짝 비율, 합계 구간을 누적합니다.
             for (Integer number : draw.getNumbers()) {
                 numberCounts.compute(number, (key, value) -> value == null ? 1L : value + 1L);
             }

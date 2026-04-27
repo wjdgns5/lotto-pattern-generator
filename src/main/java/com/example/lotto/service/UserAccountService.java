@@ -23,6 +23,7 @@ public class UserAccountService {
     @PostConstruct
     @Transactional
     public void createDefaultAdmin() {
+        // 개발/시연용 기본 관리자 계정입니다. 이미 존재하면 중복 생성하지 않습니다.
         if (!userAccountRepository.existsByUsername("admin")) {
             userAccountRepository.save(new UserAccount(
                     "admin",
@@ -34,6 +35,7 @@ public class UserAccountService {
 
     @Transactional
     public void register(RegisterRequest request) {
+        // 회원가입 요청값을 검증한 뒤 USER 권한 계정을 생성합니다.
         String username = request.getUsername() == null ? "" : request.getUsername().trim();
         if (username.length() < 4 || username.length() > 30) {
             throw new IllegalArgumentException("아이디는 4~30자로 입력해 주세요.");

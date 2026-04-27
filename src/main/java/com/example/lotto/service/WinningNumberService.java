@@ -51,6 +51,8 @@ public class WinningNumberService {
     @PostConstruct
     @Transactional
     public void importSeedCsvIfEmpty() {
+        // 앱 시작 시 DB가 비어 있으면 seed CSV를 한 번 읽어 초기 당첨번호 데이터를 채웁니다.
+        // 이미 DB에 데이터가 있으면 운영 중 데이터가 덮어써지지 않도록 아무 작업도 하지 않습니다.
         if (winningDrawRepository.count() > 0 || Files.notExists(seedCsvPath)) {
             return;
         }
@@ -110,6 +112,7 @@ public class WinningNumberService {
 
     @Transactional
     public int importCsv(MultipartFile file) {
+        // 관리자 화면에서 업로드한 MultipartFile을 문자열로 바꾼 뒤 공통 CSV 파서로 넘깁니다.
         try {
             return importCsvText(new String(file.getBytes(), StandardCharsets.UTF_8));
         } catch (IOException exception) {
@@ -121,6 +124,7 @@ public class WinningNumberService {
     public int importCsvText(String csvText) {
         int importedCount = 0;
         try (BufferedReader reader = new BufferedReader(new StringReader(csvText))) {
+            // 첫 줄은 헤더로 읽고, 그 다음 줄부터 회차 데이터를 WinningDraw로 변환해 저장합니다.
             String headerLine = reader.readLine();
             if (headerLine == null) {
                 return 0;
@@ -149,6 +153,7 @@ public class WinningNumberService {
     @Scheduled(cron = "0 0 9 * * MON", zone = "Asia/Seoul")
     @Transactional
     public void updateLatestDrawsOnSchedule() {
+        // 서버가 켜져 있으면 매주 월요일 오전 9시에 외부 API 업데이트를 자동 실행합니다.
         if (autoUpdateEnabled) {
             updateFromExternalApi();
         }
@@ -156,6 +161,8 @@ public class WinningNumberService {
 
     @Transactional
     public int updateFromExternalApi() {
+        // DB에 저장된 최신 회차 다음 번호부터 API를 조회합니다.
+        // 존재하지 않는 회차가 나오면 returnValue가 success가 아니므로 반복을 멈춥니다.
         int latestDrawNumber = winningDrawRepository.findTopByOrderByDrawNumberDesc()
                 .map(WinningDrawEntity::getDrawNumber)
                 .orElse(0);
@@ -194,6 +201,7 @@ public class WinningNumberService {
     }
 
     private WinningDraw parseUploadedCsvLine(List<String> headers, List<String> columns) {
+        // 이 프로젝트 전용 영문 헤더와 사용자가 준 로또 CSV 형식을 모두 받아들이기 위한 파서입니다.
         Map<String, String> row = new LinkedHashMap<>();
         for (int index = 0; index < headers.size() && index < columns.size(); index++) {
             row.put(headers.get(index), columns.get(index));
@@ -225,6 +233,7 @@ public class WinningNumberService {
     }
 
     private WinningDraw toWinningDraw(WinningNumberUpdateRequest request) {
+        // 관리자 수동 입력값을 검증한 뒤 DB 저장용 모델로 변환합니다.
         if (request.getDrawNumber() < 1) {
             throw new IllegalArgumentException("회차는 1 이상이어야 합니다.");
         }
@@ -301,6 +310,7 @@ public class WinningNumberService {
     }
 
     private List<String> parseCsvLine(String line) {
+        // 따옴표 안의 쉼표는 실제 구분자가 아니므로 quoted 상태를 추적하며 CSV 한 줄을 나눕니다.
         List<String> values = new ArrayList<>();
         StringBuilder current = new StringBuilder();
         boolean quoted = false;

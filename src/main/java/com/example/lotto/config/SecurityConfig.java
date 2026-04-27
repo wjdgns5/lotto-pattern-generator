@@ -14,11 +14,13 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
+        // 회원가입/기본 관리자 계정 생성 시 비밀번호를 그대로 저장하지 않고 BCrypt로 해시합니다.
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // 로그인, 회원가입, 오류 페이지, 정적 리소스는 인증 없이 접근할 수 있게 둡니다.
         RequestMatcher publicPaths = request -> {
             String path = request.getRequestURI();
             return path.equals("/login")
@@ -28,10 +30,12 @@ public class SecurityConfig {
                     || path.startsWith("/css/")
                     || path.startsWith("/js/");
         };
+        // 관리자 화면과 H2 콘솔은 ADMIN 권한만 접근할 수 있습니다.
         RequestMatcher adminPaths = request -> {
             String path = request.getRequestURI();
             return path.startsWith("/admin/") || path.equals("/admin") || path.startsWith("/h2-console/");
         };
+        // URL 권한, 로그인/로그아웃, 403 오류 처리, H2 콘솔 예외 설정을 한 곳에서 관리합니다.
         http
                 .authorizeHttpRequests(authorize -> authorize
                         .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()

@@ -50,6 +50,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String index(Model model, Principal principal) {
+        // 메인 화면은 번호 생성 form, 당첨번호 요약, 내 프리셋, 최근 생성 이력을 함께 보여줍니다.
         model.addAttribute("generationRequest", new GenerationRequest());
         addUserModel(model, principal);
         return "index";
@@ -63,6 +64,7 @@ public class HomeController {
     @GetMapping("/presets/{id}/apply")
     public String applyPreset(@PathVariable Long id, Model model, Principal principal) {
         try {
+            // 내 프리셋을 누르면 저장된 조건을 GenerationRequest로 바꾸고 즉시 번호를 생성합니다.
             RulePreset preset = rulePresetService.findMine(id, principal.getName());
             GenerationRequest request = rulePresetService.toRequest(id, principal.getName());
             GenerationResult result = lottoGenerationService.generate(request);
@@ -81,6 +83,7 @@ public class HomeController {
     @PostMapping("/generate")
     public String generate(@ModelAttribute("generationRequest") GenerationRequest request, Model model, Principal principal) {
         try {
+            // 사용자가 입력한 조건을 기준으로 번호 후보를 만들고 최근 생성 이력에도 저장합니다.
             GenerationResult result = lottoGenerationService.generate(request);
             generationHistoryService.save(principal.getName(), request, result);
             model.addAttribute("result", result);
@@ -150,6 +153,7 @@ public class HomeController {
     @PostMapping("/admin/winning-numbers/upload")
     public String uploadWinningNumbers(MultipartFile file, Model model, Principal principal) {
         try {
+            // 관리자가 업로드한 CSV를 파싱해 회차별 당첨번호 테이블에 일괄 저장합니다.
             int importedCount = winningNumberService.importCsv(file);
             adminAuditLogService.record(principal.getName(), "CSV_UPLOAD", importedCount + "개 회차 CSV 업로드");
             model.addAttribute("winningNumberMessage", importedCount + "개 회차를 업로드했습니다.");
@@ -163,6 +167,7 @@ public class HomeController {
 
     @PostMapping("/admin/winning-numbers/external-update")
     public String updateFromExternalApi(Model model, Principal principal) {
+        // 수동 버튼으로도 외부 동행복권 API 업데이트를 실행할 수 있습니다.
         int updatedCount = winningNumberService.updateFromExternalApi();
         adminAuditLogService.record(principal.getName(), "EXTERNAL_UPDATE", updatedCount + "개 회차 외부 API 업데이트");
         model.addAttribute("winningNumberMessage", updatedCount + "개 회차를 외부 API에서 업데이트했습니다.");
@@ -172,6 +177,7 @@ public class HomeController {
     }
 
     private void addUserModel(Model model, Principal principal) {
+        // 여러 사용자 화면에서 공통으로 필요한 데이터를 한 번에 채워 중복 코드를 줄입니다.
         addWinningNumberSummary(model);
         model.addAttribute("username", principal.getName());
         model.addAttribute("isAdmin", isAdmin(principal));
@@ -188,6 +194,7 @@ public class HomeController {
     }
 
     private void addAdminModel(Model model) {
+        // 관리자 화면에는 최근 당첨번호와 감사 로그가 추가로 필요합니다.
         addWinningNumberSummary(model);
         model.addAttribute("latestWinningDraws", winningNumberService.findLatest(10));
         model.addAttribute("auditLogs", adminAuditLogService.findRecent());

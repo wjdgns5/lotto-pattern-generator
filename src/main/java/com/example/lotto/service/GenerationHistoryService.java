@@ -25,6 +25,7 @@ public class GenerationHistoryService {
 
     @Transactional
     public void save(String username, GenerationRequest request, GenerationResult result) {
+        // 번호 생성 결과를 저장한 뒤, 사용자별 최근 3개만 남기도록 오래된 이력을 정리합니다.
         generationHistoryRepository.save(new GenerationHistory(
                 username,
                 requestSummary(request),
@@ -39,6 +40,7 @@ public class GenerationHistoryService {
     }
 
     private void trimOldHistories(String username) {
+        // 최신순으로 조회했을 때 4번째 이후 데이터는 삭제해 화면과 DB가 과도하게 커지지 않게 합니다.
         List<GenerationHistory> histories = generationHistoryRepository.findByUsernameOrderByCreatedAtDesc(username);
         if (histories.size() <= MAX_HISTORY_PER_USER) {
             return;
