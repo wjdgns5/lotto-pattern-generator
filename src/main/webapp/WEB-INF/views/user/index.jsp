@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!doctype html>
 <html lang="ko">
@@ -14,47 +14,47 @@
     <header>
         <div>
             <h1>Lotto Pattern Generator</h1>
-            <p>${username}?? 議곌굔??留뚯”?섎뒗 ?⑦꽩 湲곕컲 ?꾨낫 議고빀???앹꽦?⑸땲?? ??寃곌낵???덉륫?대굹 ?뱀꺼 蹂댁옣???꾨떃?덈떎.</p>
+            <p>${username}님 조건에 맞는 패턴 기반 후보 조합을 생성합니다. 이 결과는 예측이나 당첨 보장이 아닙니다.</p>
         </div>
         <nav>
-            <a href="/stats">?듦퀎</a>
+            <a href="/stats">통계</a>
             <c:if test="${isAdmin}">
-                <a href="/admin">愿由ъ옄</a>
+                <a href="/admin">관리자</a>
             </c:if>
             <form method="post" action="/logout" class="logout-form">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-                <button type="submit" class="secondary">濡쒓렇?꾩썐</button>
+                <button type="submit" class="secondary">로그아웃</button>
             </form>
         </nav>
     </header>
 
     <div class="summary">
-        <p>??λ맂 ?뱀꺼踰덊샇: ${winningDrawCount}?뚯감</p>
+        <p>저장된 당첨번호: ${winningDrawCount}회차</p>
         <c:if test="${not empty latestWinningDraw}">
-            <p>理쒖떊 ????뚯감: ${latestWinningDraw.drawNumber}?뚯감</p>
+            <p>최신 저장 회차: ${latestWinningDraw.drawNumber}회차</p>
         </c:if>
     </div>
 
-    <h2>?꾨낫 ?앹꽦</h2>
+    <h2>후보 생성</h2>
     <form method="post" action="/generate">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-        <label>3:3 媛쒖닔 <input type="number" name="threeOddThreeEvenCount" min="1" max="5" value="${generationRequest.threeOddThreeEvenCount}"></label>
-        <label>4:2 媛쒖닔 <input type="number" name="fourOddTwoEvenCount" min="1" max="5" value="${generationRequest.fourOddTwoEvenCount}"></label>
-        <label>理쒖냼 ?⑷퀎 <input type="number" name="minSum" min="21" max="255" value="${generationRequest.minSum}"></label>
-        <label>理쒕? ?⑷퀎 <input type="number" name="maxSum" min="21" max="255" value="${generationRequest.maxSum}"></label>
-        <label class="wide">?쒖쇅??<input type="text" name="excludedNumbers" placeholder="?? 4, 10, 22" value="${generationRequest.excludedNumbers}"></label>
-        <div class="actions"><button type="submit">?꾨낫 ?앹꽦</button></div>
+        <label>3:3 개수 <input type="number" name="threeOddThreeEvenCount" min="1" max="5" value="${generationRequest.threeOddThreeEvenCount}"></label>
+        <label>4:2 개수 <input type="number" name="fourOddTwoEvenCount" min="1" max="5" value="${generationRequest.fourOddTwoEvenCount}"></label>
+        <label>최소 합계 <input type="number" name="minSum" min="21" max="255" value="${generationRequest.minSum}"></label>
+        <label>최대 합계 <input type="number" name="maxSum" min="21" max="255" value="${generationRequest.maxSum}"></label>
+        <label class="wide">제외 번호 <input type="text" name="excludedNumbers" placeholder="예: 4, 10, 22" value="${generationRequest.excludedNumbers}"></label>
+        <div class="actions"><button type="submit">후보 생성</button></div>
     </form>
 
     <form method="post" action="/presets">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-        <label class="wide">?꾨━???대쫫 <input type="text" name="name" placeholder="?? 湲곕낯 10寃뚯엫"></label>
+        <label class="wide">프리셋 이름 <input type="text" name="name" placeholder="예: 기본 10게임"></label>
         <input type="hidden" name="threeOddThreeEvenCount" value="${generationRequest.threeOddThreeEvenCount}">
         <input type="hidden" name="fourOddTwoEvenCount" value="${generationRequest.fourOddTwoEvenCount}">
         <input type="hidden" name="minSum" value="${generationRequest.minSum}">
         <input type="hidden" name="maxSum" value="${generationRequest.maxSum}">
         <input type="hidden" name="excludedNumbers" value="${generationRequest.excludedNumbers}">
-        <div class="actions"><button type="submit" class="secondary">?꾩옱 議곌굔 ?꾨━?????/button></div>
+        <div class="actions"><button type="submit" class="secondary">현재 조건 프리셋 저장</button></div>
     </form>
 
     <c:if test="${not empty errorMessage}"><div class="error">${errorMessage}</div></c:if>
@@ -63,17 +63,17 @@
 
     <div class="grid">
         <section class="panel">
-            <h3>???꾨━??/h3>
+            <h3>내 프리셋</h3>
             <c:choose>
-                <c:when test="${empty presets}"><p>??λ맂 ?꾨━?뗭씠 ?놁뒿?덈떎.</p></c:when>
+                <c:when test="${empty presets}"><p>저장된 프리셋이 없습니다.</p></c:when>
                 <c:otherwise>
                     <div class="preset-list">
                         <c:forEach var="preset" items="${presets}">
                             <div class="preset-row">
-                                <p><a href="/presets/${preset.id}/apply">${preset.name}</a> 쨌 ?⑷퀎 ${preset.minSum}~${preset.maxSum}</p>
+                                <p><a href="/presets/${preset.id}/apply">${preset.name}</a> · 합계 ${preset.minSum}~${preset.maxSum}</p>
                                 <form method="post" action="/presets/${preset.id}/delete" class="preset-delete-form">
                                     <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-                                    <button type="submit" class="danger-button">??젣</button>
+                                    <button type="submit" class="danger-button">삭제</button>
                                 </form>
                             </div>
                         </c:forEach>
@@ -86,40 +86,40 @@
                 <c:when test="${not empty selectedPresetName and not empty result}">
                     <div class="result-head preset-result-head">
                         <div>
-                            <h3>?좏깮???꾨━??寃뚯엫 踰덊샇</h3>
+                            <h3>선택한 프리셋 게임 번호</h3>
                             <p>${selectedPresetName}</p>
                         </div>
-                        <button type="button" class="secondary" id="copy-all">?꾩껜 蹂듭궗</button>
+                        <button type="button" class="secondary" id="copy-all">전체 복사</button>
                     </div>
-                    <h3>3:3 ?꾨낫</h3>
+                    <h3>3:3 후보</h3>
                     <c:forEach var="candidate" items="${result.threeOddThreeEvenCandidates}">
                         <div class="candidate">
                             <div class="candidate-top">
                                 <div>
                                     <div class="balls"><c:forEach var="number" items="${candidate.numbers}"><span class="ball">${number}</span></c:forEach></div>
-                                    <div class="meta"><span>?⑷퀎 ${candidate.sum}</span><span>?⑦꽩 ${candidate.oddEvenPattern}</span></div>
+                                    <div class="meta"><span>합계 ${candidate.sum}</span><span>패턴 ${candidate.oddEvenPattern}</span></div>
                                 </div>
-                                <button type="button" class="secondary candidate-copy" data-copy="${candidate.copyText}">媛쒕퀎 蹂듭궗</button>
+                                <button type="button" class="secondary candidate-copy" data-copy="${candidate.copyText}">개별 복사</button>
                             </div>
                         </div>
                     </c:forEach>
-                    <h3>4:2 ?꾨낫</h3>
+                    <h3>4:2 후보</h3>
                     <c:forEach var="candidate" items="${result.fourOddTwoEvenCandidates}">
                         <div class="candidate">
                             <div class="candidate-top">
                                 <div>
                                     <div class="balls"><c:forEach var="number" items="${candidate.numbers}"><span class="ball">${number}</span></c:forEach></div>
-                                    <div class="meta"><span>?⑷퀎 ${candidate.sum}</span><span>?⑦꽩 ${candidate.oddEvenPattern}</span></div>
+                                    <div class="meta"><span>합계 ${candidate.sum}</span><span>패턴 ${candidate.oddEvenPattern}</span></div>
                                 </div>
-                                <button type="button" class="secondary candidate-copy" data-copy="${candidate.copyText}">媛쒕퀎 蹂듭궗</button>
+                                <button type="button" class="secondary candidate-copy" data-copy="${candidate.copyText}">개별 복사</button>
                             </div>
                         </div>
                     </c:forEach>
                 </c:when>
                 <c:otherwise>
-                    <h3>理쒓렐 ?앹꽦 ?대젰</h3>
+                    <h3>최근 생성 이력</h3>
                     <c:choose>
-                        <c:when test="${empty histories}"><p>?앹꽦 ?대젰???놁뒿?덈떎.</p></c:when>
+                        <c:when test="${empty histories}"><p>생성 이력이 없습니다.</p></c:when>
                         <c:otherwise>
                             <c:forEach var="history" items="${histories}">
                                 <div class="history-item">
@@ -139,34 +139,34 @@
             <c:forEach var="message" items="${result.messages}"><p>${message}</p></c:forEach>
         </div>
         <div class="result-head">
-            <h2>?앹꽦 寃곌낵</h2>
-            <button type="button" class="secondary" id="copy-all">?꾩껜 蹂듭궗</button>
+            <h2>생성 결과</h2>
+            <button type="button" class="secondary" id="copy-all">전체 복사</button>
         </div>
         <div class="grid">
             <section>
-                <h2>3:3 ?꾨낫</h2>
+                <h2>3:3 후보</h2>
                 <c:forEach var="candidate" items="${result.threeOddThreeEvenCandidates}">
                     <div class="candidate">
                         <div class="candidate-top">
                             <div>
                                 <div class="balls"><c:forEach var="number" items="${candidate.numbers}"><span class="ball">${number}</span></c:forEach></div>
-                                <div class="meta"><span>?⑷퀎 ${candidate.sum}</span><span>?⑦꽩 ${candidate.oddEvenPattern}</span><span>?鍮덈룄 ${empty candidate.lowFrequencyNumbers ? '?놁쓬' : candidate.lowFrequencyNumbers}</span></div>
+                                <div class="meta"><span>합계 ${candidate.sum}</span><span>패턴 ${candidate.oddEvenPattern}</span><span>저빈도 ${empty candidate.lowFrequencyNumbers ? '없음' : candidate.lowFrequencyNumbers}</span></div>
                             </div>
-                            <button type="button" class="secondary candidate-copy" data-copy="${candidate.copyText}">媛쒕퀎 蹂듭궗</button>
+                            <button type="button" class="secondary candidate-copy" data-copy="${candidate.copyText}">개별 복사</button>
                         </div>
                     </div>
                 </c:forEach>
             </section>
             <section>
-                <h2>4:2 ?꾨낫</h2>
+                <h2>4:2 후보</h2>
                 <c:forEach var="candidate" items="${result.fourOddTwoEvenCandidates}">
                     <div class="candidate">
                         <div class="candidate-top">
                             <div>
                                 <div class="balls"><c:forEach var="number" items="${candidate.numbers}"><span class="ball">${number}</span></c:forEach></div>
-                                <div class="meta"><span>?⑷퀎 ${candidate.sum}</span><span>?⑦꽩 ${candidate.oddEvenPattern}</span><span>?鍮덈룄 ${empty candidate.lowFrequencyNumbers ? '?놁쓬' : candidate.lowFrequencyNumbers}</span></div>
+                                <div class="meta"><span>합계 ${candidate.sum}</span><span>패턴 ${candidate.oddEvenPattern}</span><span>저빈도 ${empty candidate.lowFrequencyNumbers ? '없음' : candidate.lowFrequencyNumbers}</span></div>
                             </div>
-                            <button type="button" class="secondary candidate-copy" data-copy="${candidate.copyText}">媛쒕퀎 蹂듭궗</button>
+                            <button type="button" class="secondary candidate-copy" data-copy="${candidate.copyText}">개별 복사</button>
                         </div>
                     </div>
                 </c:forEach>
@@ -174,7 +174,7 @@
         </div>
     </c:if>
 </main>
-<div class="toast" id="toast">蹂듭궗?덉뒿?덈떎</div>
+<div class="toast" id="toast">복사되었습니다</div>
 <script>
     const toast = document.getElementById("toast");
     function showToast(message) { toast.textContent = message; toast.classList.add("visible"); window.setTimeout(() => toast.classList.remove("visible"), 1400); }
@@ -195,14 +195,14 @@
         return copied;
     }
     async function copyText(text) {
-        if (!text) { showToast("蹂듭궗??踰덊샇媛 ?놁뒿?덈떎"); return; }
+        if (!text) { showToast("복사할 번호가 없습니다"); return; }
         let copied = false;
         if (navigator.clipboard && window.isSecureContext) {
             try { await navigator.clipboard.writeText(text); copied = true; } catch (error) { copied = fallbackCopyText(text); }
         } else {
             copied = fallbackCopyText(text);
         }
-        showToast(copied ? "蹂듭궗?덉뒿?덈떎" : "蹂듭궗?섏? 紐삵뻽?듬땲??);
+        showToast(copied ? "복사되었습니다" : "복사하지 못했습니다");
     }
     document.addEventListener("click", (event) => {
         const button = event.target.closest(".candidate-copy");
@@ -218,5 +218,3 @@
 </script>
 </body>
 </html>
-
-

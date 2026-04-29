@@ -1,4 +1,4 @@
-﻿<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!doctype html>
 <html lang="ko">
@@ -13,53 +13,53 @@
     <%-- 관리자 화면: 당첨번호 수동 저장, CSV 업로드, 외부 API 업데이트, 감사 로그를 관리합니다. --%>
     <header>
         <div>
-            <h1>愿由ъ옄</h1>
-            <p>?뱀꺼踰덊샇 ??? CSV ?낅줈?? ?몃? API ?낅뜲?댄듃? 愿由ъ옄 媛먯궗 濡쒓렇瑜?愿由ы빀?덈떎.</p>
+            <h1>관리자</h1>
+            <p>당첨번호 저장, CSV 업로드, 외부 API 업데이트와 관리자 감사 로그를 관리합니다.</p>
         </div>
-        <a href="/generate" class="nav-button">?ъ슜???붾㈃</a>
+        <a href="/generate" class="nav-button">사용자 화면</a>
     </header>
 
     <div class="summary">
-        <p>??λ맂 ?뱀꺼踰덊샇: ${winningDrawCount}?뚯감</p>
+        <p>저장된 당첨번호: ${winningDrawCount}회차</p>
         <c:if test="${not empty latestWinningDraw}">
-            <p>理쒖떊 ????뚯감: ${latestWinningDraw.drawNumber}?뚯감 ${latestWinningDraw.drawDate}</p>
+            <p>최신 저장 회차: ${latestWinningDraw.drawNumber}회차 ${latestWinningDraw.drawDate}</p>
         </c:if>
     </div>
     <c:if test="${not empty winningNumberMessage}"><div class="notice">${winningNumberMessage}</div></c:if>
     <c:if test="${not empty winningNumberErrorMessage}"><div class="error">${winningNumberErrorMessage}</div></c:if>
 
-    <h2>CSV ?쇨큵 ?낅줈??/h2>
+    <h2>CSV 일괄 업로드</h2>
     <form method="post" action="/admin/winning-numbers/upload" enctype="multipart/form-data">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-        <label class="full-row">CSV ?뚯씪 <input type="file" name="file" accept=".csv" required></label>
-        <div class="actions"><button type="submit">CSV ?낅줈??/button></div>
+        <label class="full-row">CSV 파일 <input type="file" name="file" accept=".csv" required></label>
+        <div class="actions"><button type="submit">CSV 업로드</button></div>
     </form>
 
-    <h2>?몃? API ?낅뜲?댄듃</h2>
+    <h2>외부 API 업데이트</h2>
     <form method="post" action="/admin/winning-numbers/external-update">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-        <div class="actions"><button type="submit">理쒖떊 ?뚯감 媛?몄삤湲?/button></div>
+        <div class="actions"><button type="submit">최신 회차 가져오기</button></div>
     </form>
 
-    <h2>?뱀꺼踰덊샇 ?섎룞 ???/h2>
+    <h2>당첨번호 수동 저장</h2>
     <form method="post" action="/admin/winning-numbers">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}">
-        <label>?뚯감 <input type="number" name="drawNumber" min="1" required></label>
-        <label>異붿꺼??<input type="date" name="drawDate"></label>
-        <label>踰덊샇 1 <input type="number" name="number1" min="1" max="45" required></label>
-        <label>踰덊샇 2 <input type="number" name="number2" min="1" max="45" required></label>
-        <label>踰덊샇 3 <input type="number" name="number3" min="1" max="45" required></label>
-        <label>踰덊샇 4 <input type="number" name="number4" min="1" max="45" required></label>
-        <label>踰덊샇 5 <input type="number" name="number5" min="1" max="45" required></label>
-        <label>踰덊샇 6 <input type="number" name="number6" min="1" max="45" required></label>
-        <label>蹂대꼫??<input type="number" name="bonusNumber" min="1" max="45"></label>
-        <div class="actions"><button type="submit">???/button></div>
+        <label>회차 <input type="number" name="drawNumber" min="1" required></label>
+        <label>추첨일 <input type="date" name="drawDate"></label>
+        <label>번호 1 <input type="number" name="number1" min="1" max="45" required></label>
+        <label>번호 2 <input type="number" name="number2" min="1" max="45" required></label>
+        <label>번호 3 <input type="number" name="number3" min="1" max="45" required></label>
+        <label>번호 4 <input type="number" name="number4" min="1" max="45" required></label>
+        <label>번호 5 <input type="number" name="number5" min="1" max="45" required></label>
+        <label>번호 6 <input type="number" name="number6" min="1" max="45" required></label>
+        <label>보너스 <input type="number" name="bonusNumber" min="1" max="45"></label>
+        <div class="actions"><button type="submit">저장</button></div>
     </form>
 
-    <h2>愿由ъ옄 媛먯궗 濡쒓렇</h2>
+    <h2>관리자 감사 로그</h2>
     <c:choose>
         <c:when test="${empty auditLogs}">
-            <div class="audit-log"><p>?꾩쭅 湲곕줉??愿由ъ옄 ?묒뾽???놁뒿?덈떎.</p></div>
+            <div class="audit-log"><p>아직 기록된 관리자 작업이 없습니다.</p></div>
         </c:when>
         <c:otherwise>
             <div class="audit-grid">
@@ -75,11 +75,11 @@
     </c:choose>
 
     <c:if test="${not empty latestWinningDraws}">
-        <h2>理쒓렐 ????뚯감</h2>
+        <h2>최근 저장 회차</h2>
         <div class="history">
             <c:forEach var="draw" items="${latestWinningDraws}">
                 <div class="draw">
-                    <div class="meta"><span>${draw.drawNumber}?뚯감</span><span>${empty draw.drawDate ? '-' : draw.drawDate}</span><span>蹂대꼫??${empty draw.bonusNumber ? '-' : draw.bonusNumber}</span></div>
+                    <div class="meta"><span>${draw.drawNumber}회차</span><span>${empty draw.drawDate ? '-' : draw.drawDate}</span><span>보너스 ${empty draw.bonusNumber ? '-' : draw.bonusNumber}</span></div>
                     <div class="balls"><c:forEach var="number" items="${draw.numbers}"><span class="ball">${number}</span></c:forEach></div>
                 </div>
             </c:forEach>
@@ -88,5 +88,3 @@
 </main>
 </body>
 </html>
-
-
