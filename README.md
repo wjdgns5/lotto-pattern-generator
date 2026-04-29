@@ -5,6 +5,8 @@
 프로젝트 구조와 코드 흐름을 자세히 이해하려면 아래 문서를 먼저 읽어보세요.
 
 - [코드 설명서](docs/CODE_GUIDE.md)
+- [STEP 1~19 학습 기록](docs/LEARNING_STEPS_1_19.md)
+- [STEP 1~19 대화형 복습 기록](docs/LEARNING_QA_STEPS_1_19.md)
 - [AWS 배포 메모](docs/AWS_DEPLOYMENT.md)
 
 로또 당첨번호 데이터를 기반으로 조건에 맞는 후보 번호를 생성하고, 관리자 기능으로 당첨번호를 관리할 수 있는 Spring Boot MVC 프로젝트입니다.
