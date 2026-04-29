@@ -53,7 +53,7 @@ public class HomeController {
         // 메인 화면은 번호 생성 form, 당첨번호 요약, 내 프리셋, 최근 생성 이력을 함께 보여줍니다.
         model.addAttribute("generationRequest", new GenerationRequest());
         addUserModel(model, principal);
-        return "index";
+        return "user/index";
     }
 
     @GetMapping("/generate")
@@ -77,7 +77,7 @@ public class HomeController {
             model.addAttribute("errorMessage", exception.getMessage());
         }
         addUserModel(model, principal);
-        return "index";
+        return "user/index";
     }
 
     @PostMapping("/generate")
@@ -91,7 +91,7 @@ public class HomeController {
             model.addAttribute("errorMessage", exception.getMessage());
         }
         addUserModel(model, principal);
-        return "index";
+        return "user/index";
     }
 
     @PostMapping("/presets")
@@ -104,7 +104,7 @@ public class HomeController {
         }
         model.addAttribute("generationRequest", request);
         addUserModel(model, principal);
-        return "index";
+        return "user/index";
     }
 
     @PostMapping("/presets/{id}/delete")
@@ -117,20 +117,20 @@ public class HomeController {
         }
         model.addAttribute("generationRequest", new GenerationRequest());
         addUserModel(model, principal);
-        return "index";
+        return "user/index";
     }
 
     @GetMapping("/stats")
     public String stats(Model model) {
         model.addAttribute("stats", statsService.summarize());
-        return "stats";
+        return "stats/index";
     }
 
     @GetMapping("/admin")
     public String admin(Model model) {
         model.addAttribute("winningNumberUpdateRequest", new WinningNumberUpdateRequest());
         addAdminModel(model);
-        return "admin";
+        return "admin/index";
     }
 
     @PostMapping("/admin/winning-numbers")
@@ -147,7 +147,7 @@ public class HomeController {
             model.addAttribute("winningNumberErrorMessage", exception.getMessage());
         }
         addAdminModel(model);
-        return "admin";
+        return "admin/index";
     }
 
     @PostMapping("/admin/winning-numbers/upload")
@@ -162,7 +162,7 @@ public class HomeController {
         }
         model.addAttribute("winningNumberUpdateRequest", new WinningNumberUpdateRequest());
         addAdminModel(model);
-        return "admin";
+        return "admin/index";
     }
 
     @PostMapping("/admin/winning-numbers/external-update")
@@ -173,7 +173,7 @@ public class HomeController {
         model.addAttribute("winningNumberMessage", updatedCount + "개 회차를 외부 API에서 업데이트했습니다.");
         model.addAttribute("winningNumberUpdateRequest", new WinningNumberUpdateRequest());
         addAdminModel(model);
-        return "admin";
+        return "admin/index";
     }
 
     private void addUserModel(Model model, Principal principal) {

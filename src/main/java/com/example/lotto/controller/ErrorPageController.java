@@ -17,13 +17,13 @@ public class ErrorPageController {
         Object statusCode = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
         int status = statusCode == null ? 500 : Integer.parseInt(statusCode.toString());
         addErrorModel(model, status, principal);
-        return "error";
+        return "common/error";
     }
 
     @GetMapping("/error-page")
     public String errorPage(@RequestParam(defaultValue = "500") int status, Model model, Principal principal) {
         addErrorModel(model, status, principal);
-        return "error";
+        return "common/error";
     }
 
     private void addErrorModel(Model model, int status, Principal principal) {
